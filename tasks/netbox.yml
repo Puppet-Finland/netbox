@@ -125,6 +125,14 @@
   become: true
   become_user: nobody
 
+# Work around https://github.com/yaml/pyyaml/issues/756 which affects Netbox
+# 4.1.6 on Python 3.12 (Ubuntu 24.04).
+- name: Use more recent PyYAML to work around a build failure
+  ansible.builtin.lineinfile:
+    path: "{{ netbox_root }}/netbox/requirements.txt"
+    regexp: '^PyYAML==6.0$'
+    line: 'PyYAML==6.0.1'
+
 - name: Install netbox python requirements
   ansible.builtin.pip:
     requirements: "{{ netbox_root }}/netbox/requirements.txt"
